@@ -37,11 +37,11 @@ def get_tunnels(connection):
 
 def get_destination(connection,tunnel):
     #Regular Expression to match Ip address
-    expression = re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    expression = re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}")
     #Sends the show the command to list destination and receives the output back
     connection.send("show run int {} | in tunnel destination\n".format(tunnel))
     time.sleep(5)
-    output = connection.recv(40).decode(encoding='utf-8')
+    output = connection.recv(99).decode(encoding='utf-8')
     time.sleep(2)
     #Filters the output and returns the IP
     tunnel_dest = expression.findall(output)
@@ -68,12 +68,13 @@ access_list = open("access-list.txt", "w")
 #loop through the list of tunnels and get ip's
 for tun in tunnels:
     dest = get_destination(router_ssh,tun)
-    access_list.write ("ip access-list extended ACL-WAN_IN permit ip host {} any\n".format(dest))
+    print("Tunnel - {} - IP Address: {}\n".format(tun,dest[0]))
+    access_list.write ("ip access-list extended ACL-WAN_IN permit ip host {} any\n".format(dest[0]))
 
 #close the file
 access_list.close()
 
 #close the connection
-firewall.close()
+router_ssh.close()
 
 print('\nComplete!')

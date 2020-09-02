@@ -1,0 +1,2 @@
+ip access-list extended ACL-WAN_IN permit ip host 1.1.1.2 any
+ip access-list extended ACL-WAN_IN permit ip host 1.2.2.2 any
